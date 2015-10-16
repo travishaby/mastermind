@@ -69,9 +69,9 @@ end
 
 def count_correct_characters(guess)
   answer_copy = @answer.dup.chars
-  @character_count = guess.chars.count do |color|
-    response = answer_copy.include?(color)
-    answer_copy.shift
+  @character_count = answer_copy.count do |color|
+    response = guess.include?(color)
+    guess.shift
     response
   end
 end
@@ -79,7 +79,7 @@ end
 def respond_to_guess(guess)
   comparison = guess.chars.zip(correct_answer.chars)
   pos_count = count_correct_position(comparison)
-  char_count = count_correct_characters(guess)
+  char_count = count_correct_characters(guess.chars)
   @guesses += 1
   unless @user_guess == @answer
     puts "'#{@user_guess}' has #{char_count} of the correct elements with #{pos_count} in the correct positions. You've taken #{@guesses} guess(es)."
