@@ -47,6 +47,7 @@ end
 def guesses
   @guesses ||= 0
 end
+
 # LOGIC FOR TURN
 
 def turn
@@ -67,7 +68,12 @@ def count_correct_position(comparison)
 end
 
 def count_correct_characters(guess)
-  @character_count = guess.chars.count {|color| guess.count(color) == @answer.count(color)}
+  answer_copy = @answer.dup.chars
+  @character_count = guess.chars.count do |color|
+    response = answer_copy.include?(color)
+    answer_copy.shift
+    response
+  end
 end
 
 def respond_to_guess(guess)
