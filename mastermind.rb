@@ -1,5 +1,5 @@
-
-COLORS = ["g", "b", "y"]
+require 'pry'
+# SETUP FOR GUESSES
 
 def play_mastermind
   start_game
@@ -22,19 +22,85 @@ def possible_responses
    "q" => quit}
 end
 
-# ----------------- 
-
 def start_turn
   "Lets play!"
   turn
 end
 
 def read_instructions
-  "what, you don't know how to play?"
+  "Let me google that for you..."
 end
 
 def quit
-  "ya done, son"
+  "Goodbye, thanks for playing!"
+end
+
+# SETUP FOR TURN
+
+COLORS = ["r", "g", "b", "y"]
+
+def correct_answer
+  guesses
+  @answer ||= COLORS.map {|x| COLORS.sample}.join
+end
+
+def guesses
+  @guesses ||= 0
+end
+# LOGIC FOR TURN
+
+def turn
+  correct_answer
+  puts "I have generated a beginner sequence with four elements made up of: (r)ed,
+(g)reen, (b)lue, and (y)ellow. Use (q)uit at any time to end the game. Please enter your guess as four sequential letters, for instance: 'rgby'.
+What's your guess?"
+  listen_to_response
+end
+
+def listen_to_response
+  @user_guess = gets.chomp.downcase
+  @user_guess == "q" ? quit : respond_to_guess(@user_guess)
+end
+
+def count_correct_position(comparison)
+  @position_count = comparison.count {|color_pair| color_pair[0] == color_pair[1]}
+end
+
+def count_correct_characters(guess)
+  @character_count = guess.chars.count {|color| guess.count(color) == @answer.count(color)}
+end
+
+def respond_to_guess(guess)
+  comparison = guess.chars.zip(correct_answer.chars)
+  pos_count = count_correct_position(comparison)
+  char_count = count_correct_characters(guess)
+  @guesses += 1
+  unless @user_guess == @answer
+    puts "'#{@user_guess}' has #{char_count} of the correct elements with #{pos_count} in the correct positions. You've taken #{@guesses} guess(es)."
+    start_next_turn
+  else
+    win_game
+  end
+end
+
+def start_next_turn
+  puts "Please enter your guess as four sequential letters, for instance: 'rgby'.
+  What's your guess?"
+  listen_to_response
+end
+
+def win_game
+  puts "Congratulations! You guessed the sequence '#{@answer}' in #{@guesses} guesses. Do you want to (p)lay again or (q)uit?"
+  if gets == "p"
+    @answer = nil
+    @guesses = nil
+    play_mastermind
+  elsif gets == "q"
+    quit
+  else
+    puts "Wtf!"
+    win_game
+  end
 end
 
 play_mastermind
